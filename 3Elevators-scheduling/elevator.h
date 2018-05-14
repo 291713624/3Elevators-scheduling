@@ -14,7 +14,7 @@ public:
 	int askfloor;//发出请求的楼层 
 	int askspace;//请求前往的目的地 
 	int usetime;//该乘客总等待时间 
-	int now;//用于判断该乘客是否已处理的状态；
+	int now;//用于判断该乘客是否已处理的状态；-1未处理，1,2,3分别在1号2号3号电梯中，0处理完
 	void uplift(int i);//判断该乘客是否符合上电梯条件
 	void downlift(int i);//判断该乘客是否到达目的地
 };

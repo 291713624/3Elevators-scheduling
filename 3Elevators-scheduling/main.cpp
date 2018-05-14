@@ -3,20 +3,21 @@
 #include<cstring>
 #include<string>
 #include<cmath>
+#include <algorithm>
 #include <cstdio>
 #include <queue>
 #include <vector>
 #include"Elevator.h"
 using namespace std;
-int N, n, i, j, l, num, distime;//ï¿½ï¿½ï¿½ï¿½È«ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½
+int N, i, j, l, num, distime;//ÉèÖÃÈ«¾Ö±äÁ¿£»
 Elevator e1, e2, e3;
 man people[100006];
 int nowtime = 0;
-void uplift(int i)//ï¿½Ð¶Ï¸Ã³Ë¿ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void uplift(int i)//ÅÐ¶Ï¸Ã³Ë¿ÍÊÇ·ñ·ûºÏÉÏµçÌÝÌõ¼þ
 {
 	if (nowtime >= people[i].asktime&&people[i].now == -1) {
-		if (people[i].n == 1) {
-			if (e1.nowfloor == people[i].askfloor && e2.nowfloor == people[i].askfloor) {
+		if (people[i].n == 1) {//Èç¹û³Ë¿Í¿ÉÒÔ³Ë×ø1ºÅµçÌÝ
+			if (e1.nowfloor == people[i].askfloor && e2.nowfloor == people[i].askfloor) {//Èç¹û1ºÅµçÌÝºÍ2ºÅµçÌÝ¶¼ÔÚ¸ÃÂ¥²ã
 				if (people[i].askspace > people[i].askfloor) {
 					if (e2.indicator == 1) {
 						e2.stop(nowtime, e2.nowfloor, 2);
@@ -60,23 +61,27 @@ void uplift(int i)//ï¿½Ð¶Ï¸Ã³Ë¿ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					return;
 				}
 			}
-			if (e2.nowfloor == people[i].askfloor) {
+			else if (e2.nowfloor == people[i].askfloor) {
 				e2.stop(nowtime, e2.nowfloor, 2);
 				e2.nowman++;
 				people[i].now = 0;
 				nowtime++;
 				return;
 			}
-			if (e1.nowfloor == people[i].askfloor) {
+			else if (e1.nowfloor == people[i].askfloor) {
 				e1.stop(nowtime, e1.nowfloor, 1);
 				e1.nowman++;
 				people[i].now = 0;
 				nowtime++;
 				return;
 			}
+			else {
+				if (people[i].askfloor > e1.nowfloor &&e1.nowman == 0) e1.indicator = 1;
+				if (people[i].askfloor < e1.nowfloor &&e1.nowman == 0) e1.indicator = -1;
+			}
 		}
-		if (people[i].n == 3) {
-			if (e3.nowfloor == people[i].askfloor && e2.nowfloor == people[i].askfloor) {
+		if (people[i].n == 3) {//Èç¹û³Ë¿Í¿ÉÒÔ³Ë×ø3ºÅµçÌÝ
+			if (e3.nowfloor == people[i].askfloor && e2.nowfloor == people[i].askfloor) {//Èç¹û3ºÅµçÌÝºÍ2ºÅµçÌÝ¶¼ÔÚ¸ÃÂ¥²ã
 				if (people[i].askspace > people[i].askfloor) {
 					if (e2.indicator == 1) {
 						e2.stop(nowtime, e2.nowfloor, 2);
@@ -120,6 +125,27 @@ void uplift(int i)//ï¿½Ð¶Ï¸Ã³Ë¿ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					return;
 				}
 			}
+			else if (e2.nowfloor == people[i].askfloor) {
+				e2.stop(nowtime, e2.nowfloor, 2);
+				e2.nowman++;
+				people[i].now = 0;
+				nowtime++;
+				return;
+			}
+			else if (e3.nowfloor == people[i].askfloor) {
+				e3.stop(nowtime, e3.nowfloor, 3);
+				e3.nowman++;
+				people[i].now = 0;
+				nowtime++;
+				return;
+			}
+			else {
+				if (people[i].askfloor > e3.nowfloor &&e3.nowman == 0) e3.indicator = 1;
+				if (people[i].askfloor < e3.nowfloor &&e3.nowman == 0) e3.indicator = -1;
+			}
+		}
+		if (people[i].n == 2) {//Èç¹û³Ë¿ÍÖ»ÄÜ³Ë×ø2ºÅµçÌÝ
+				
 			if (e2.nowfloor == people[i].askfloor) {
 				e2.stop(nowtime, e2.nowfloor, 2);
 				e2.nowman++;
@@ -127,18 +153,15 @@ void uplift(int i)//ï¿½Ð¶Ï¸Ã³Ë¿ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				nowtime++;
 				return;
 			}
-			if (e3.nowfloor == people[i].askfloor) {
-				e3.stop(nowtime, e3.nowfloor, 3);
-				e3.nowman++;
-				people[i].now = 0;
-				nowtime++;
-				return;
+			else {
+				if (people[i].askfloor > e2.nowfloor &&e2.nowman==0) e2.indicator = 1;
+				if(people[i].askfloor < e2.nowfloor &&e2.nowman == 0) e2.indicator = -1;
 			}
 		}
 	}
 }
 
-void downlift(int i)//ï¿½Ð¶Ï¸Ã³Ë¿ï¿½ï¿½Ç·ñµ½´ï¿½Ä¿ï¿½Äµï¿½
+void downlift(int i)//ÅÐ¶Ï¸Ã³Ë¿ÍÊÇ·ñµ½´ïÄ¿µÄµØ
 {
 	if (people[i].now == 1) {
 		if (people[i].askspace == e1.nowfloor) {
@@ -149,7 +172,7 @@ void downlift(int i)//ï¿½Ð¶Ï¸Ã³Ë¿ï¿½ï¿½Ç·ñµ½´ï¿½Ä¿ï¿½Äµï¿½
 			num--;
 			return;
 		}
-	}
+	}//Èç¹û³Ë¿ÍÔÚ1µçÌÝÀï
 	if (people[i].now == 2) {
 		if (people[i].askspace == e2.nowfloor) {
 			e2.stop(nowtime, e2.nowfloor, 2);
@@ -159,7 +182,7 @@ void downlift(int i)//ï¿½Ð¶Ï¸Ã³Ë¿ï¿½ï¿½Ç·ñµ½´ï¿½Ä¿ï¿½Äµï¿½
 			num--;
 			return;
 		}
-	}
+	}//Èç¹û³Ë¿ÍÔÚ2µçÌÝÀï
 	if (people[i].now == 3) {
 		if (people[i].askspace == e3.nowfloor) {
 			e3.stop(nowtime, e3.nowfloor, 3);
@@ -169,7 +192,7 @@ void downlift(int i)//ï¿½Ð¶Ï¸Ã³Ë¿ï¿½ï¿½Ç·ñµ½´ï¿½Ä¿ï¿½Äµï¿½
 			num--;
 			return;
 		}
-	}
+	}//Èç¹û³Ë¿ÍÔÚ3µçÌÝÀï
 }
 int main() {
 	ifstream infile("./input.txt", ios::in);
@@ -179,19 +202,19 @@ int main() {
 		exit(1);
 	}
 	ofstream outfile4("./output1.txt", ios::app);
-	if (!outfile4)//ï¿½Ð¶ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ç·ï¿½É¹ï¿½
+	if (!outfile4)//ÅÐ¶ÏÎÄ¼þ´ò¿ªÊÇ·ñ³É¹¦
 	{
 		cerr << "open outfile wrong!\n";
 		exit(1);
 	}
 	ofstream outfile5("./output2.txt", ios::app);
-	if (!outfile5)//ï¿½Ð¶ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ç·ï¿½É¹ï¿½
+	if (!outfile5)//ÅÐ¶ÏÎÄ¼þ´ò¿ªÊÇ·ñ³É¹¦
 	{
 		cerr << "open outfile wrong!\n";
 		exit(1);
 	}
 	ofstream outfile6("./output3.txt", ios::app);
-	if (!outfile6)//ï¿½Ð¶ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ç·ï¿½É¹ï¿½
+	if (!outfile6)//ÅÐ¶ÏÎÄ¼þ´ò¿ªÊÇ·ñ³É¹¦
 	{
 		cerr << "open outfile wrong!\n";
 		exit(1);
@@ -213,39 +236,134 @@ int main() {
 		else {
 			people[i].n = 2;
 		}
-	}//ï¿½ï¿½È¡Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	}//¶ÁÈ¡N¸öÇëÇó£»
 	j = 1;
-	nowtime = people[1].asktime;//ï¿½ï¿½ï¿½ÝµÈ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	nowtime = people[1].asktime;//µçÌÝµÈ´ýÖÁ½ÓÊÕµ½µÚÒ»ÌõÇëÇó
 	if (people[1].askfloor == 1) {
 		e2.indicator = 1;
 		e2.nowman++;
 		people[j].now = 2;
 		nowtime++;
 		j++;
-		while (people[j].askfloor == 1) {
-			if (people[j].n == 1) {
+		while (people[j].askfloor == 1 && j <= N) {
+			if (people[j].n == 1&&nowtime>=people[j].asktime) {
 				e1.indicator = 1;
 				e1.nowman++;
 				people[j].now = 1;
-				nowtime++;
+				if (people[j].asktime != nowtime - 1) {
+					nowtime++;
+				}
 				j++;
 			}
-			if (people[j].n == 3) {
+			else if (people[j].n == 3 && nowtime >= people[j].asktime) {
 				e3.indicator = 1;
 				e3.nowman++;
 				people[j].now = 3;
-				nowtime++;
+				if (people[j].asktime != nowtime - 1) {
+					nowtime++;
+				}
 				j++;
 			}
-			if (people[j].n == 2) {
+			else if (people[j].n == 2 && nowtime >= people[j].asktime) {
 				e2.indicator = 1;
 				e2.nowman++;
 				people[j].now = 2;
-				nowtime++;
+				if (people[j].asktime != nowtime - 1) {
+					nowtime++;
+				}
 				j++;
 			}
 		}
-	}//ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½Ò»ï¿½ï¿½
+		while (people[j].asktime <= nowtime && j<=N) {
+			if (people[j].n == 1) {
+				e1.indicator = 1;
+				if (e1.nowfloor == people[j].askfloor) {
+					if (people[j].askfloor == 1) {
+						e1.nowman++;
+						people[j].now = 1;
+						j++;
+					}
+					else {
+						e1.nowman++;
+						people[j].now = 1;
+						e1.stop(nowtime, e1.nowfloor, 1);
+						j++;
+					}
+				}
+				else {
+					if ((people[j].askfloor - e1.nowfloor) <= nowtime) {
+						e1.nowman++;
+						people[j].now = 1;
+						e1.stop(people[j].askfloor - e1.nowfloor+1, people[j].askfloor, 1);
+						if ((people[j].askfloor - e1.nowfloor) == nowtime) nowtime++;
+						e1.nowfloor = people[j].askfloor;
+						j++;
+					}
+					else {
+						e1.nowfloor = nowtime + 1;
+					}
+				}
+			}
+			if (people[j].n == 2) {
+				e2.indicator = 1;
+				if (e2.nowfloor == people[j].askfloor) {
+					if (people[j].askfloor == 1) {
+						e2.nowman++;
+						people[j].now = 2;
+						j++;
+					}
+					else {
+						e2.nowman++;
+						people[j].now = 2;
+						e2.stop(nowtime, e2.nowfloor, 2);
+						j++;
+					}
+				}
+				else {
+					if ((people[j].askfloor - e2.nowfloor) <= nowtime) {
+						e2.nowman++;
+						people[j].now = 2;
+						e2.stop(people[j].askfloor - e2.nowfloor+1, people[j].askfloor, 2);
+						if ((people[j].askfloor - e2.nowfloor) == nowtime) nowtime++;
+						e2.nowfloor = people[j].askfloor;
+						j++;
+					}
+					else {
+						e2.nowfloor = nowtime + 1;
+					}
+				}
+			}
+			if (people[j].n == 3) {
+				e3.indicator = 1;
+				if (e3.nowfloor == people[j].askfloor) {
+					if (people[j].askfloor == 1) {
+						e3.nowman++;
+						people[j].now = 3;
+						j++;
+					}
+					else {
+						e3.nowman++;
+						people[j].now = 3;
+						e3.stop(nowtime, e3.nowfloor, 3);
+						j++;
+					}
+				}
+				else {
+					if ((people[j].askfloor - e3.nowfloor) <= nowtime) {
+						e3.nowman++;
+						people[j].now = 3;
+						e3.stop(people[j].askfloor - e3.nowfloor+1, people[j].askfloor, 3);
+						if ((people[j].askfloor - e3.nowfloor) == nowtime) nowtime++;
+						e3.nowfloor = people[j].askfloor;
+						j++;
+					}
+					else {
+						e3.nowfloor = nowtime + 1;
+					}
+				}
+			}
+		}
+	}//Èç¹ûÇ°¼¸ÌõÇëÇó¶¼ÔÚµÚÒ»²ã
 	else {
 		nowtime += people[j].askfloor - 1;
 		e2.nowfloor = people[j].askfloor;
@@ -255,7 +373,7 @@ int main() {
 		people[j].now = 2;
 		nowtime++;
 		j++;
-		while (people[j].asktime == people[1].asktime) {
+		while (people[j].asktime == people[1].asktime && j <= N) {
 			if (people[j].n == 1) {
 				e1.nowfloor = people[j].askfloor;
 				distime = people[j].askfloor - people[1].askfloor;
@@ -287,56 +405,57 @@ int main() {
 				j++;
 			}
 		}
-	}//ï¿½Ôµï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ 
+	}//¶ÔµÚÒ»ÌõÇëÇó²»ÔÚµÚÒ»²ã¶ø×ö³öÏìÓ¦ 
 	while (1) {
-		nowtime++;
-		if (e1.indicator == 1 && e1.nowfloor == 10) e1.indicator = -1;
-		if (e1.indicator == -1 && e1.nowfloor == 1) e1.indicator = 1;
-		if (e2.indicator == 1 && e2.nowfloor == 10) e2.indicator = -1;
-		if (e2.indicator == -1 && e2.nowfloor == 1) e2.indicator = 1;
-		if (e3.indicator == 1 && e3.nowfloor == 10) e3.indicator = -1;
-		if (e3.indicator == -1 && e3.nowfloor == 1) e3.indicator = 1;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½
-		if (e1.indicator == 1) e1.nowfloor++;
-		if (e1.indicator == -1) e1.nowfloor--;
-		if (e2.indicator == 1) e2.nowfloor++;
-		if (e2.indicator == -1) e2.nowfloor--;
-		if (e3.indicator == 1) e3.nowfloor++;
-		if (e3.indicator == -1) e3.nowfloor--;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
-		for (i = 1; i <= N; i++) {
-			uplift(i);
-			downlift(i);
-		}
 		if (e1.nowman == 0) e1.indicator = 0;
 		if (e2.nowman == 0) e2.indicator = 0;
 		if (e3.nowman == 0) e3.indicator = 0;
 		if (e1.nowman == 1) {
-			for (i = 1; i < N; i++) {
+			for (i = 1; i <= N; i++) {
 				if (people[i].now == 1) {
 					if (people[i].askspace > e1.nowfloor) e1.indicator = 1;
 					else e1.indicator = -1;
 					break;
 				}
 			}
-		}//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½ 
+		}
 		if (e2.nowman == 1) {
-			for (i = 1; i < N; i++) {
+			for (i = 1; i <= N; i++) {
 				if (people[i].now == 2) {
 					if (people[i].askspace > e2.nowfloor) e2.indicator = 1;
 					else e2.indicator = -1;
 					break;
 				}
 			}
-		}//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½ 
+		}
 		if (e3.nowman == 1) {
-			for (i = 1; i < N; i++) {
+			for (i = 1; i <= N; i++) {
 				if (people[i].now == 3) {
 					if (people[i].askspace > e3.nowfloor) e3.indicator = 1;
 					else e3.indicator = -1;
 					break;
 				}
 			}
-		}//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½3ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½ 
-		if (num == 0) break; //ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Ë¿Í¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê£¬ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ 
+		}
+		nowtime++;
+		if (e1.indicator == 1 && e1.nowfloor == 10) e1.indicator = -1;
+		if (e1.indicator == -1 && e1.nowfloor == 1) e1.indicator = 1;
+		if (e2.indicator == 1 && e2.nowfloor == 10) e2.indicator = -1;
+		if (e2.indicator == -1 && e2.nowfloor == 1) e2.indicator = 1;
+		if (e3.indicator == 1 && e3.nowfloor == 10) e3.indicator = -1;
+		if (e3.indicator == -1 && e3.nowfloor == 1) e3.indicator = 1;//µ÷ÕûµçÌÝÔËÐÐ·½Ïò
+		if (e1.indicator == 1) e1.nowfloor++;
+		if (e1.indicator == -1) e1.nowfloor--;
+		if (e2.indicator == 1) e2.nowfloor++;
+		if (e2.indicator == -1) e2.nowfloor--;
+		if (e3.indicator == 1) e3.nowfloor++;
+		if (e3.indicator == -1) e3.nowfloor--;//µçÌÝÔËÐÐ 
+		for (i = 1; i <= N; i++) {
+			uplift(i);
+			downlift(i);
+		}
+		
+		if (num == 0) break; //Èç¹ûN¸ö³Ë¿Í¶¼´¦ÀíÍê£¬½áÊøÑ­»· 
 	}
 
 	return 0;
